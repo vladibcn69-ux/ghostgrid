@@ -16,6 +16,6 @@ Comunidad OSINT y portal para entusiastas de la inteligencia de fuentes abiertas
 
 ## Roadmap
 
-- [ ] Suricata / IDS
-- [ ] Monitoreo de logs
+- [x] Suricata / IDS
+- [x] Monitoreo de logs
 - [ ] Emulación de vulnerabilidades
