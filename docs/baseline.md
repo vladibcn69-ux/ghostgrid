@@ -45,3 +45,25 @@ alert tcp any any -> $HOME_NET any (msg:"NMAP SYN scan detected (threshold rule)
 ```
 
 Detecta 10 o más paquetes con flag SYN desde el mismo origen hacia cualquier puerto de `$HOME_NET` en una ventana de 5 segundos — patrón característico de un escaneo de puertos (Nmap `-sS`/`-sT`), a diferencia de una conexión legítima puntual.
+
+## Correlación de eventos
+
+Se identifica el mismo evento de reconocimiento (escaneo Nmap `-sT -sV -Pn --disable-arp-ping -p 1-50,8080`, lanzado desde el host Windows `192.168.20.114` contra el servidor `192.168.20.118`) visible de forma independiente en dos sistemas de registro distintos, a nivel de red y a nivel de aplicación.
+
+**Suricata — `/var/log/suricata/fast.log`** (fase de descubrimiento de puertos, SYN scan):
+```
+09/16/2026-11:25:50.956809  [**] [1:1000002:1] NMAP SYN scan detected (threshold rule) [**] [Classification: Attempted Information Leak] [Priority: 2] {TCP} 192.168.20.114:18164 -> 192.168.20.118:34
+09/16/2026-11:25:50.959928  [**] [1:1000002:1] NMAP SYN scan detected (threshold rule) [**] [Classification: Attempted Information Leak] [Priority: 2] {TCP} 192.168.20.114:18204 -> 192.168.20.118:46
+```
+La regla de umbral (sid:1000002) generó 5 alertas entre las **11:25:50.9568 y 11:25:50.9599 UTC** al detectar ≥10 paquetes SYN desde el mismo origen hacia distintos puertos en pocos milisegundos.
+
+**nginx — log de acceso del contenedor `ghostgrid-web-1`** (fase de fingerprinting HTTP `-sV` + scripts NSE), ~6-7 segundos después:
+```
+192.168.20.114 - - [16/Sep/2026:11:25:57 +0000] "GET / HTTP/1.0" 200 167 "-" "-" "-"
+192.168.20.114 - - [16/Sep/2026:11:25:57 +0000] "GET /nmaplowercheck1789557958 HTTP/1.1" 404 153 "-" "Mozilla/5.0 (compatible; Nmap Scripting Engine; https://nmap.org/book/nse.html)" "-"
+192.168.20.114 - - [16/Sep/2026:11:25:57 +0000] "POST /sdk HTTP/1.1" 404 153 "-" "Mozilla/5.0 (compatible; Nmap Scripting Engine; https://nmap.org/book/nse.html)" "-"
+192.168.20.114 - - [16/Sep/2026:11:25:57 +0000] "GET /HNAP1 HTTP/1.1" 404 153 "-" "Mozilla/5.0 (compatible; Nmap Scripting Engine; https://nmap.org/book/nse.html)" "-"
+```
+Registrado a las **11:25:57 UTC**, con el mismo origen `192.168.20.114` y User-Agent `Nmap Scripting Engine`, inequívoco de las pruebas NSE de detección de servicio.
+
+**Conclusión:** ambos registros corresponden a la **misma sesión de escaneo Nmap**, identificada por el mismo par origen/destino (`192.168.20.114` → `192.168.20.118`), con apenas 6-7 segundos de diferencia entre la fase de descubrimiento de puertos (capturada a nivel de red por Suricata mediante la regla de umbral sid:1000002) y la fase de fingerprinting HTTP/NSE (capturada a nivel de aplicación por el log de acceso de nginx). La proximidad temporal y la coincidencia de IPs confirman que se trata de un único evento observado por dos sistemas de monitoreo independientes y complementarios.
