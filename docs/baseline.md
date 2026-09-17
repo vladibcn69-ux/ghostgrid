@@ -67,3 +67,21 @@ La regla de umbral (sid:1000002) generó 5 alertas entre las **11:25:50.9568 y 1
 Registrado a las **11:25:57 UTC**, con el mismo origen `192.168.20.114` y User-Agent `Nmap Scripting Engine`, inequívoco de las pruebas NSE de detección de servicio.
 
 **Conclusión:** ambos registros corresponden a la **misma sesión de escaneo Nmap**, identificada por el mismo par origen/destino (`192.168.20.114` → `192.168.20.118`), con apenas 6-7 segundos de diferencia entre la fase de descubrimiento de puertos (capturada a nivel de red por Suricata mediante la regla de umbral sid:1000002) y la fase de fingerprinting HTTP/NSE (capturada a nivel de aplicación por el log de acceso de nginx). La proximidad temporal y la coincidencia de IPs confirman que se trata de un único evento observado por dos sistemas de monitoreo independientes y complementarios.
+
+## Diferencia entre evento, alerta e incidente
+
+**Evento:** cualquier suceso registrado en un log del sistema, sin que implique por sí mismo algo anómalo o malicioso. Es el nivel más bajo y más numeroso de la línea base — la inmensa mayoría de eventos son tráfico legítimo. Ejemplos de este proyecto: una línea de `/var/log/auth.log` como `Accepted publickey for ghostadmin from 192.168.20.114 port 58228 ssh2` (un login SSH exitoso), o una línea del access log de nginx como `172.18.0.1 - - [16/Sep/2026:09:20:25 +0000] "GET / HTTP/1.1" 200 167` (una petición HTTP normal).
+
+**Alerta:** un evento (o conjunto de eventos) que coincide con una regla de detección explícita del IDS y que, por tanto, Suricata registra en `fast.log`. Es un subconjunto filtrado de los eventos totales — no todo evento genera una alerta, pero toda alerta parte de uno o más eventos. Ejemplos de este proyecto: la alerta `sid:1000001` (`ICMP ping detected`, regla local) disparada ante cualquier ping ICMP recibido, y la alerta `sid:1000002` (`NMAP SYN scan detected`, regla de umbral: ≥10 paquetes SYN del mismo origen en 5 segundos) disparada al detectar un escaneo de puertos tipo Nmap `-sT`/`-sS`.
+
+**Incidente:** una alerta (o correlación de alertas) que, interpretada en el contexto de la línea base y del entorno, representa una amenaza real o confirmada que requiere respuesta activa. La distinción clave es que no toda alerta es un incidente: una alerta es una detección automática basada en firma o umbral; un incidente es una conclusión humana (o de política) sobre el significado e impacto de esa detección.
+
+### ¿Es el escaneo Nmap un incidente según nuestra línea base?
+
+**No**, con la información registrada en este documento no lo clasificamos como incidente, por tres razones concretas:
+
+1. **Origen conocido y controlado.** El escaneo se originó desde `192.168.20.114`, un host que nosotros mismos operamos deliberadamente para generar tráfico de prueba durante la validación del laboratorio — no es un origen externo ni un actor no identificado.
+2. **Sin impacto confirmado.** El escaneo es reconocimiento puro (descubrimiento de puertos + fingerprinting de servicio vía scripts NSE): no hay evidencia de explotación, acceso no autorizado ni escalado de privilegios en ninguno de los logs correlacionados (`fast.log`, `auth.log`, access log de nginx).
+3. **Es la prueba funcional de la detección, no un ataque.** El objetivo explícito del ejercicio (sección "Línea base — tabla obligatoria" y "Correlación de eventos") era comprobar que las reglas `sid:1000001`/`sid:1000002` detectan y correlacionan correctamente el comportamiento — es decir, el escaneo confirma que el sistema de alertas funciona, no que hubo un compromiso.
+
+Por tanto, en este proyecto el escaneo Nmap queda clasificado como **alerta esperada / tráfico de prueba autorizado**. Pasaría a clasificarse como incidente si: el origen fuera una IP no reconocida o no autorizada, el escaneo fuera seguido de intentos de explotación o acceso real (p. ej. fuerza bruta SSH exitosa, subida de un payload vía HTTP), o si una futura política de seguridad del proyecto definiera explícitamente cualquier escaneo de puertos como reportable con independencia de su origen.
