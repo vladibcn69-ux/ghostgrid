@@ -1,0 +1,26 @@
+# Extracto de /etc/suricata/suricata.yaml (Suricata 6.0.4) con los valores usados en ghostgrid-srv.
+# No contiene secretos. El fichero completo lo genera el paquete de Ubuntu; ver scripts/install-suricata.sh.
+
+vars:
+  address-groups:
+    HOME_NET: "[192.168.20.0/24]"   # red protegida; ajustar si cambia el direccionamiento DHCP
+    EXTERNAL_NET: "!$HOME_NET"
+
+# Captura de tráfico en la interfaz de red del servidor
+af-packet:
+  - interface: enp0s3
+
+# Salidas utilizadas en las evidencias de MF0488
+outputs:
+  - fast:
+      enabled: yes
+      filename: fast.log
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+
+# Solo se cargan las reglas locales (el fichero suricata.rules no existe sin suricata-update)
+default-rule-path: /etc/suricata/rules
+rule-files:
+  - local.rules
