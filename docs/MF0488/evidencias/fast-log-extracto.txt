@@ -1,0 +1,5 @@
+09/15/2026-21:18:27.283876  [**] [1:1000001:1] ICMP ping detected (local rule) [**] [Classification: (null)] [Priority: 3] {ICMP} 192.168.20.114:8 -> 192.168.20.117:0
+09/16/2026-09:21:31.979677  [**] [1:1000001:1] ICMP ping detected (local rule) [**] [Classification: (null)] [Priority: 3] {ICMP} 192.168.20.114:8 -> 192.168.20.118:0
+09/16/2026-09:49:32.913745  [**] [1:1000002:1] NMAP SYN scan detected (threshold rule) [**] [Classification: Attempted Information Leak] [Priority: 2] {TCP} 192.168.20.114:23814 -> 192.168.20.118:113
+09/16/2026-09:49:32.918617  [**] [1:1000002:1] NMAP SYN scan detected (threshold rule) [**] [Classification: Attempted Information Leak] [Priority: 2] {TCP} 192.168.20.114:23824 -> 192.168.20.118:70
+09/16/2026-09:49:32.919167  [**] [1:1000002:1] NMAP SYN scan detected (threshold rule) [**] [Classification: Attempted Information Leak] [Priority: 2] {TCP} 192.168.20.114:23834 -> 192.168.20.118:37

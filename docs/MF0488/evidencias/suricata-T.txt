@@ -1,0 +1,11 @@
+16/11/2026 -- 10:44:48 - <Info> - Running suricata under test mode
+16/11/2026 -- 10:44:48 - <Notice> - This is Suricata version 6.0.4 RELEASE running in SYSTEM mode
+16/11/2026 -- 10:44:48 - <Info> - CPUs/cores online: 1
+16/11/2026 -- 10:44:48 - <Info> - fast output device (regular) initialized: fast.log
+16/11/2026 -- 10:44:48 - <Info> - eve-log output device (regular) initialized: eve.json
+16/11/2026 -- 10:44:48 - <Info> - stats output device (regular) initialized: stats.log
+16/11/2026 -- 10:44:48 - <Info> - 1 rule files processed. 2 rules successfully loaded, 0 rules failed
+16/11/2026 -- 10:44:48 - <Info> - Threshold config parsed: 0 rule(s) found
+16/11/2026 -- 10:44:48 - <Info> - 2 signatures processed. 0 are IP-only rules, 0 are inspecting packet payload, 0 inspect application layer, 0 are decoder event only
+16/11/2026 -- 10:44:48 - <Notice> - Configuration provided was successfully loaded. Exiting.
+16/11/2026 -- 10:44:48 - <Info> - cleaning up signature grouping structure... complete
