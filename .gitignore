@@ -1,4 +1,37 @@
+# Secretos y configuración local
 .env
+.env.*
+!.env.example
+*.key
+*.p12
+*.pfx
+**/private/
+Access*
+*.txt.txt
+
+# CTF: flags, soluciones y dossier (solo en local, fuera de git)
+user.txt
+root.txt
+ghostgrid-private/
+
+# Imágenes y discos de máquinas virtuales
+*.ova
+*.ovf
+*.vmdk
+*.vmx
+*.vmsn
+*.vmsd
+
+# Copias de seguridad
+*.bak
+*.backup
+
+# Datos de contenedores
+docker/db/data/
+docker/mariadb_data/
+docker/wordpress_data/
+
+# Otros
 *.log
 node_modules/
 __pycache__/
