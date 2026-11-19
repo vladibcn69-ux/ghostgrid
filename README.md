@@ -41,6 +41,16 @@ docker compose up -d
 
 ## Roadmap
 
-- [x] Suricata / IDS
-- [x] Monitoreo de logs
-- [ ] Emulación de vulnerabilidades
+...
+- [x] Infraestructura Ubuntu Server + Docker (MF0488)
+- [x] Monitorización de logs e IDS con Suricata (MF0488)
+- [x] Reto Boot2Root: acceso inicial y escalada de privilegios (MF0490)
+- [x] Exportación a OVA y despliegue en TryHackMe (MF0490)
+...
+## Despliegue
+...
+Máquina publicada como sala privada en TryHackMe:
+https://tryhackme.com/room/ghostgridboot2rootmf0490
+
+> Es una sala privada: el acceso debe concederse a quien vaya a resolverla.
+...
